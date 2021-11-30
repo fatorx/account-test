@@ -2,7 +2,6 @@
 
 namespace App\Account;
 
-use App\Account\Account;
 use App\Http\Request;
 
 class Methods
@@ -10,6 +9,14 @@ class Methods
     private Account $account;
     private Request $request;
 
+    private string $message = '';
+    private bool $status    = true;
+    private int $code       = 200;
+
+    /**
+     * @param Account $account
+     * @param Request $request
+     */
     public function __construct(Account $account, Request $request)
     {
         $this->account = $account;
@@ -22,10 +29,21 @@ class Methods
         echo "getReset";
     }
 
-    public function getBalance()
+    public function getBalance(): array
     {
-        //$this->account->processPostBalance();
-        echo "getReset";
+        $accountId = $this->request->getQueryString('account_id', 0);
+        $data      = [];
+
+        try {
+            $data = $this->account->processGetBalance($accountId);
+            if (!$data) {
+                $this->code = 404;
+            }
+        } catch (\Exception $e) {
+            $this->code = 500;
+        }
+
+        return $data;
     }
 
     public function postReset()
@@ -43,5 +61,20 @@ class Methods
     public function postEvent()
     {
         echo "postReset";
+    }
+
+    public function getMessage(): string
+    {
+        return $this->message;
+    }
+
+    public function getStatus(): bool
+    {
+        return $this->status;
+    }
+
+    public function getCode(): int
+    {
+        return $this->code;
     }
 }

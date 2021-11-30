@@ -10,6 +10,6 @@ interface IRequest
 
     public function getRequestUri(): string;
 
-    public function getQueryString(): string;
+    public function getQueryString(string $name, $returnDefault = 0): string;
 
 }

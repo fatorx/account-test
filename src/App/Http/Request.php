@@ -8,8 +8,6 @@ use App\Factory;
 class Request implements IRequest
 {
     private array   $server;
-    private bool    $status = true;
-    private string  $route = '/';
     private Methods $methods;
 
     public function __construct()
@@ -31,22 +29,61 @@ class Request implements IRequest
     public function run(): Response
     {
         $data = [];
-        if ($this->methods instanceof Methods) {
-            $requestUri   = $this->getRequestUri();
-            $method       = $this->getHttpMethod();
-            $lengthUri    = strlen($requestUri);
-            $uriForName   = ucfirst(substr($requestUri, 1, $lengthUri));
-            $methodTarget = $method . $uriForName;
-            $classMethods = get_class_methods(get_class($this->methods));
+        $isTarget = false;
+        $status   = false;
+        $message  = '';
+        $code     = 200;
 
+        if ($this->methods instanceof Methods) {
+            $methodTarget = $this->getMethodTarget();
+            $classMethods = get_class_methods(get_class($this->methods));
+            
             foreach ($classMethods as $method) {
-                if ($method == $methodTarget) {
+                $isTarget = ($method == $methodTarget);
+                if ($isTarget) {
                     $this->methods->{$method}();
+                    $status  = $this->methods->getStatus();
+                    $message = $this->methods->getMessage();
+                    $code    = $this->methods->getCode();
                 }
             }
         }
 
-        return new Response($data);
+        if (!$isTarget) {
+            $data = [
+                'status'  => $status,
+                'message' => 'Method not found.'
+            ];
+        }
+
+        if (!$status) {
+            $data = [
+                'status'  => false,
+                'message' => $message
+            ];
+        }
+
+        return $this->getResponse($data, $status, $code);
+    }
+
+    public function getMethodTarget(): string
+    {
+        $requestUri   = $this->getRequestUri();
+        $method       = $this->getHttpMethod();
+        $lengthUri    = strlen($requestUri);
+        $uriForName   = ucfirst(substr($requestUri, 1, $lengthUri));
+        return $method . $uriForName;
+    }
+
+    /**
+     * @param array $data
+     * @param bool $status
+     * @param int $code
+     * @return Response
+     */
+    public function getResponse(array $data, bool $status, int $code): Response
+    {
+        return new Response($data, $status, $code);
     }
 
     /**
@@ -82,7 +119,7 @@ class Request implements IRequest
     {
         $requestUri  = $this->server['REQUEST_URI'];
         if (strstr($requestUri, '?')) {
-            $partsUri = explode('?', $requestUri);
+            $partsUri   = explode('?', $requestUri);
             $requestUri = reset($partsUri);
         }
 
@@ -90,15 +127,18 @@ class Request implements IRequest
     }
 
     /**
+     * @param string $name
+     * @param int $returnDefault
      * @return string
      */
-    public function getQueryString(): string
+    public function getQueryString(string $name, $returnDefault = 0): string
     {
         $queryString = $this->server['QUERY_STRING'];
         if (null !== $queryString) {
-            parse_str(urldecode($queryString), $output);
-            d($output);
+            parse_str(urldecode($queryString), $pars);
+            return $pars[$name] ?? $returnDefault;
         }
-        return [];
+
+        return $returnDefault;
     }
 }
