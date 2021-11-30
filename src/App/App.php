@@ -17,11 +17,12 @@ class App
     }
 
     /**
-     * @return void
+     * @return App
      */
-    public function addControl()
+    public function addControl(): App
     {
         $this->methods = (new Factory())->buildClassMethods($this->request);
+        return $this;
     }
 
     /**

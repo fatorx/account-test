@@ -7,7 +7,5 @@ require_once '../autoload.php';
 
 use App\App;
 
-$http = new App();
-$http->addControl();
-$response = $http->run();
+$response = (new App())->addControl()->run();
 $response();
