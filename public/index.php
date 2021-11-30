@@ -5,9 +5,9 @@ ini_set('display_errors', 1);
 
 require_once '../autoload.php';
 
-use App\Http\Request;
+use App\App;
 
-$http = new Request();
+$http = new App();
 $http->addControl();
 $response = $http->run();
 $response();

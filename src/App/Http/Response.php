@@ -4,25 +4,32 @@ namespace App\Http;
 
 class Response
 {
-    private array $data = [];
-    private bool  $status    = true;
-    private int   $code       = 200;
+    private array $data;
+    private int   $code;
 
     /**
      * @param array $data
-     * @param bool $status
      * @param int $code
      */
-    public function __construct(array $data, bool $status, int $code)
+    public function __construct(array $data, int $code)
     {
         $this->data   = $data;
-        $this->status = $status;
         $this->code   = $code;
     }
 
     public function __invoke()
     {
         http_response_code($this->code);
+        if ($this->code == 404) {
+            echo 0;
+            exit();
+        }
+
+        if (isset($this->data['value'])) {
+            echo $this->data['value'];
+            exit();
+        }
+
         header('Content-type: application/json');
         echo json_encode( $this->data );
     }

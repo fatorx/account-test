@@ -4,8 +4,12 @@ namespace App\Account;
 
 class Account
 {
-    public function processGetBalance(int $accountId)
+    /**
+     * @param int $accountId
+     * @return int
+     */
+    public function processGetBalance(int $accountId): int
     {
-        return [];
+        return 20;
     }
 }

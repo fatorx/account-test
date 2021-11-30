@@ -25,20 +25,23 @@ class Methods
 
     public function getReset()
     {
-        //$this->account->processGetReset();
+        //$this->account->processReset();
         echo "getReset";
     }
 
     public function getBalance(): array
     {
         $accountId = $this->request->getQueryString('account_id', 0);
-        $data      = [];
+        $data      = [
+            'value' => 0
+        ];
 
         try {
-            $data = $this->account->processGetBalance($accountId);
-            if (!$data) {
+            $value = $this->account->processGetBalance($accountId);
+            if (!$value) {
                 $this->code = 404;
             }
+            $data['value'] = $value;
         } catch (\Exception $e) {
             $this->code = 500;
         }
