@@ -1,0 +1,10 @@
+.vendor/
+.phpunit.result.cache
+.DS_Store
+.vscode
+.idea/
+.env
+tmp/
+.run
+d-*
+/data
