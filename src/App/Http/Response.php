@@ -30,7 +30,9 @@ class Response
             exit();
         }
 
-        header('Content-type: application/json');
-        echo json_encode( $this->data );
+        if ($this->data) {
+            header('Content-type: application/json');
+            echo json_encode( $this->data );
+        }
     }
 }

@@ -15,7 +15,7 @@ class App
     {
         $this->request = new Request();
     }
-    
+
     /**
      * @return App
      */
@@ -55,9 +55,7 @@ class App
                 'status'  => $status,
                 'message' => 'Method not found.'
             ];
-        }
-
-        if (!$status) {
+        } else if (!$status) {
             $data = [
                 'status'  => false,
                 'message' => $message

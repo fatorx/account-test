@@ -23,10 +23,10 @@ class Methods
         $this->request = $request;
     }
 
-    public function getReset()
+    public function getReset(): array
     {
         //$this->account->processReset();
-        echo "getReset";
+        return [];
     }
 
     public function getBalance(): array
@@ -47,12 +47,6 @@ class Methods
         }
 
         return $data;
-    }
-
-    public function postReset()
-    {
-        //$this->account->processPostReset();
-        echo "postReset";
     }
 
     public function postBalance()
