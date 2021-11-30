@@ -66,18 +66,12 @@ class Methods
         echo "postReset";
     }
 
-    public function getMessage(): string
+    public function getState(): array
     {
-        return $this->message;
-    }
-
-    public function getStatus(): bool
-    {
-        return $this->status;
-    }
-
-    public function getCode(): int
-    {
-        return $this->code;
+        return [
+            $this->status,
+            $this->message,
+            $this->code
+        ];
     }
 }

@@ -17,7 +17,17 @@ class Factory
      */
     public function buildClassMethods(Request $request): Methods
     {
-        $account = new Account();
+        $account = $this->buildAccount();
         return new Methods($account, $request);
+    }
+
+    /**
+     * @return Account
+     */
+    public function buildAccount(): Account
+    {
+        $storage = new Storage\Storage();
+        $account = new Account();
+        return $account->setStorage($storage);
     }
 }

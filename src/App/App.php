@@ -15,7 +15,7 @@ class App
     {
         $this->request = new Request();
     }
-
+    
     /**
      * @return App
      */
@@ -44,9 +44,7 @@ class App
                 $isTarget = ($method == $methodTarget);
                 if ($isTarget) {
                     $data    = $this->methods->{$method}();
-                    $status  = $this->methods->getStatus();
-                    $message = $this->methods->getMessage();
-                    $code    = $this->methods->getCode();
+                    list($status, $message, $code) = $this->methods->getState();
                     break;
                 }
             }
