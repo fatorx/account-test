@@ -127,7 +127,7 @@ class Account
         if (!$statusStore) {
             return [];
         }
-        
+
         return [
             'origin' => [
                 'id'      => $accountId,
