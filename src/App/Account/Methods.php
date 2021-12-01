@@ -26,10 +26,10 @@ class Methods
     /**
      * @return array
      */
-    public function getReset(): array
+    public function postReset(): array
     {
         $this->status = $this->account->processReset();
-        return [];
+        return['value' => 'OK'];
     }
 
     /**
@@ -57,11 +57,7 @@ class Methods
     }
 
     /**
-
-        # Withdraw from non-existing account
-        POST /event {"type":"withdraw", "origin":"200", "amount":10}
-        404 0
-
+     * @return array
      */
     public function postEvent(): array
     {
@@ -69,6 +65,7 @@ class Methods
 
         try {
             $value = $this->account->processPostEvent($data);
+            $this->code = 201;
             if (!$value) {
                 $this->code = 404;
             }

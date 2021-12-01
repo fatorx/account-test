@@ -29,7 +29,7 @@ class Account
             return 0;
         }
 
-        return $balance['amount'];
+        return $balance['balance'];
     }
 
     /**
@@ -44,7 +44,7 @@ class Account
         $amount    = $data['amount'];
 
         if ($account) {
-            $amount = $account['amount'] + $amount;
+            $amount = $account['balance'] + $amount;
         }
 
         $statusStore = $this->manageBalance($accountId, $amount);
@@ -85,7 +85,7 @@ class Account
         $accountId = $data['destination'];
         $account   = $this->getBalanceById($accountId);
 
-        $currentAccount = $account['amount'] ?? 0;
+        $currentAccount = $account['balance'] ?? 0;
         $newAmount = $currentAccount + $amount;
 
         $statusStore = $this->manageBalance($accountId, $newAmount);
@@ -109,7 +109,7 @@ class Account
     {
         // @todo valid enter
         $amount    = $data['amount'];
-        $accountId = $data['destination'];
+        $accountId = $data['origin'];
 
         $account   = $this->getBalanceById($accountId);
 
@@ -117,19 +117,19 @@ class Account
             return [];
         }
 
-        $currentAccount = $account['amount'] ?? 0;
+        $currentAccount = $account['balance'] ?? 0;
         if ($currentAccount < $amount) {
             return [];
         }
-        $newAmount = $currentAccount - $amount;
 
+        $newAmount = $currentAccount - $amount;
         $statusStore = $this->manageBalance($accountId, $newAmount);
         if (!$statusStore) {
             return [];
         }
-
+        
         return [
-            'destination' => [
+            'origin' => [
                 'id'      => $accountId,
                 'balance' => $newAmount
             ]
@@ -142,6 +142,7 @@ class Account
      */
     public function transfer(array $data = []): array
     {
+        // @todo valid enter
         $amount = $data['amount'];
         $origin = $data['origin'];
         $destination = $data['destination'];
@@ -159,12 +160,10 @@ class Account
 
         $amountFrom = $amountFromOriginal - $amount;
         $accountTo  = $this->getBalanceById($destination);
-        if(!$accountTo) {
-            $statusStore = $this->manageBalance($destination, $amount);
-            if (!$statusStore) {
-                return [];
-            }
+        if($accountTo) {
+            $amount = $accountTo['balance'] + $amount;
         }
+        $this->manageBalance($destination, $amount);
 
         $statusStore = $this->manageBalance($origin, $amountFrom);
         if (!$statusStore) {
@@ -248,8 +247,6 @@ class Account
         return $balances;
     }
 
-
-
     /**
      * @param Storage $storage
      * @return Account
@@ -267,5 +264,4 @@ class Account
     {
         return $this->status;
     }
-
 }
