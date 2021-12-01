@@ -9,9 +9,3 @@ spl_autoload_register(function ($className) {
         include  'src/'.$class.'.php';
     }
 });
-
-function d($data) {
-    echo '<pre>';
-    var_dump($data);
-    exit();
-}
