@@ -23,12 +23,18 @@ class Methods
         $this->request = $request;
     }
 
+    /**
+     * @return array
+     */
     public function getReset(): array
     {
-        //$this->account->processReset();
+        $this->status = $this->account->processReset();
         return [];
     }
 
+    /**
+     * @return array
+     */
     public function getBalance(): array
     {
         $accountId = $this->request->getQueryString('account_id', 0);
@@ -42,6 +48,7 @@ class Methods
                 $this->code = 404;
             }
             $data['value'] = $value;
+
         } catch (\Exception $e) {
             $this->code = 500;
         }
@@ -49,15 +56,29 @@ class Methods
         return $data;
     }
 
-    public function postBalance()
-    {
-        //$this->account->processPostBalance();
-        echo "postReset";
-    }
+    /**
 
-    public function postEvent()
+        # Withdraw from non-existing account
+        POST /event {"type":"withdraw", "origin":"200", "amount":10}
+        404 0
+
+     */
+    public function postEvent(): array
     {
-        echo "postReset";
+        $data = $this->request->getStreamParameters();
+
+        try {
+            $value = $this->account->processPostEvent($data);
+            if (!$value) {
+                $this->code = 404;
+            }
+            return $value;
+
+        } catch (\Exception $e) {
+
+        }
+
+        return [];
     }
 
     public function getState(): array

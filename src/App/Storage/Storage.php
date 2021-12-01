@@ -2,6 +2,7 @@
 
 namespace App\Storage;
 
+use App\Config\Strings;
 use Redis;
 
 class Storage
@@ -21,12 +22,13 @@ class Storage
     /**
      * @param $key
      * @param $value
+     * @param bool $list
      * @return bool
      */
-    public function setItem($key, $value): bool
+    public function setItem($key, $value, bool $list = false): bool
     {
-        if (!$this->redis->exists($key)) {
-            return $this->redis->set($key, $value);
+        if (!$this->redis->exists($key) || $list) {
+            return $this->redis->set($key, serialize($value));
         }
 
         return false;
@@ -38,6 +40,24 @@ class Storage
      */
     public function getItem($key)
     {
-        return $this->redis->get($key);
+        $item = $this->redis->get($key);
+        if ($item) {
+            return unserialize($item);
+        }
+
+        return null;
+    }
+
+    /**
+     * @return bool
+     */
+    public function reset(): bool
+    {
+        $keys = $this->redis->keys( Strings::PKEY . '*');
+        foreach ($keys as $key) {
+            $this->redis->del($key);
+        }
+
+        return true;
     }
 }
